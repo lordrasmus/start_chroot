@@ -13,42 +13,36 @@ if [ ! -e proc ] ; then
 	exit 1
 fi
 
-grep "$(pwd)/proc proc" /proc/mounts > /dev/null
-if [ ! 0 -eq $? ] ; then
-	echo "mount proc ( proc )"
-	mount -t proc none proc
-fi
+function dir_mount {
+	grep "$(pwd)/$1" /proc/mounts > /dev/null
+	if [ ! 0 -eq $? ] ; then
+		echo -e "\033[01;32m *\033[00m mount /$1 ( $2 )"
+		mount -t $2 none $1
+	fi
+}
 
-grep "$(pwd)/sys sysfs" /proc/mounts > /dev/null
-if [ ! 0 -eq $? ] ; then
-	echo "mount sys ( sysfs )"
-	mount -t sysfs none sys
-fi
-
-grep "$(pwd)/dev devtmpfs" /proc/mounts > /dev/null
-if [ ! 0 -eq $? ] ; then
-	echo "mount dev ( devtmpfs ) "
-	mount -t devtmpfs none dev
-fi
-
-grep "$(pwd)/dev/shm tmpfs" /proc/mounts > /dev/null
-if [ ! 0 -eq $? ] ; then
-	echo "mount dev/shm ( tmpfs ) "
-	mount -o mode=1777 -t tmpfs  none dev/shm
-fi
-
-grep "$(pwd)/var/tmp/" /proc/mounts > /dev/null
-if [ ! 0 -eq $? ] ; then
-	echo "mount var/tmp/ ( tmpfs ) "
-	mount -t tmpfs  none dev/shm
-fi
+function dir_mount_opt {
+	grep "$(pwd)/$1" /proc/mounts > /dev/null
+	if [ ! 0 -eq $? ] ; then
+		echo -e "\033[01;32m *\033[00m mount /$1 ( $2 , $3)"
+		mount -o $3 -t $2 none $1
+	fi
+}
 
 
-grep "$(pwd)/dev/pts devpts" /proc/mounts > /dev/null
-if [ ! 0 -eq $? ] ; then
-	echo "mount dev/pts ( devpts ) "
-	mount -o gid=5 -t devpts none  dev/pts
-fi
+
+
+
+echo -e "\n\033[01;32m *\033[00m init chroot\n"
+
+dir_mount     'proc'    'proc'
+dir_mount     'sys'     'sysfs'
+dir_mount     'dev'     'devtmpfs'
+dir_mount_opt 'dev/shm' 'tmpfs'    'mode=1777'
+dir_mount_opt 'dev/pts' 'devpts'   'gid=5'
+dir_mount     'var/tmp' 'tmpfs'
+
+
 
 if [[ -L "$(pwd)/etc/resolv.conf" ]]; then
 	echo "/etc/resolv.conf symlink not suported"
@@ -58,6 +52,9 @@ else
 fi
 
 
+echo -e "\n\033[01;32m *\033[00m starting chroot\n"
 chroot .
+
+
 
 
