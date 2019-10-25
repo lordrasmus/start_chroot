@@ -40,14 +40,27 @@ dir_mount     'sys'     'sysfs'
 dir_mount     'dev'     'devtmpfs'
 dir_mount_opt 'dev/shm' 'tmpfs'    'mode=1777'
 dir_mount_opt 'dev/pts' 'devpts'   'gid=5'
+dir_mount     'run'     'tmpfs'
 dir_mount     'var/tmp' 'tmpfs'
 
 
 echo ""
 if [[ -L "$(pwd)/etc/resolv.conf" ]]; then
-	dest=$(readlink -f  etc/resolv.conf)
-	cat /etc/resolv.conf > $dest
-	echo -e "\033[01;32m *\033[00m $dest created"
+	dirname="none"
+	dest=$(readlink etc/resolv.conf)
+	#echo $dest
+	if [[ "$dest" == "../"* ]] ; then
+		dirname=$(dirname $dest | cut -d'/' -f2-)
+		file=$(basename $dest) 
+		
+		mkdir -p $dirname
+		dest=$dirname"/"$file
+		cat /etc/resolv.conf > $dest
+		echo -e "\033[01;32m *\033[00m $dest created"
+	fi
+	if [[ $dirname == "none" ]] ; then
+		echo -e "\033[01;31m *\033[00m $dest not created"
+	fi
 else
 	cat /etc/resolv.conf > $(pwd)/etc/resolv.conf
 	echo -e "\033[01;32m *\033[00m created /etc/resolv.conf"
