@@ -43,12 +43,14 @@ dir_mount_opt 'dev/pts' 'devpts'   'gid=5'
 dir_mount     'var/tmp' 'tmpfs'
 
 
-
+echo ""
 if [[ -L "$(pwd)/etc/resolv.conf" ]]; then
-	echo "/etc/resolv.conf symlink not suported"
-	exit 1
+	dest=$(readlink -f  etc/resolv.conf)
+	cat /etc/resolv.conf > $dest
+	echo -e "\033[01;32m *\033[00m $dest created"
 else
 	cat /etc/resolv.conf > $(pwd)/etc/resolv.conf
+	echo -e "\033[01;32m *\033[00m created /etc/resolv.conf"
 fi
 
 
