@@ -37,6 +37,13 @@ if [ ! 0 -eq $? ] ; then
 	mount -o mode=1777 -t tmpfs  none dev/shm
 fi
 
+grep "$(pwd)/var/tmp/" /proc/mounts > /dev/null
+if [ ! 0 -eq $? ] ; then
+	echo "mount var/tmp/ ( tmpfs ) "
+	mount -t tmpfs  none dev/shm
+fi
+
+
 grep "$(pwd)/dev/pts devpts" /proc/mounts > /dev/null
 if [ ! 0 -eq $? ] ; then
 	echo "mount dev/pts ( devpts ) "
