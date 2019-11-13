@@ -35,6 +35,8 @@ function dir_mount_opt {
 
 echo -e "\n\033[01;32m *\033[00m init chroot\n"
 
+mount --bind $(pwd) $(pwd)
+
 dir_mount     'proc'    'proc'
 dir_mount     'sys'     'sysfs'
 dir_mount     'dev'     'devtmpfs'
