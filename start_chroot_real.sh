@@ -59,7 +59,16 @@ if [[ -L "$(pwd)/etc/resolv.conf" ]]; then
 		dest=$dirname"/"$file
 		cat /etc/resolv.conf > $dest
 		echo -e "\033[01;32m *\033[00m $dest created"
+	else
+		dirname=$(dirname $dest)
+		if [ ! -e $dirname ] ; then
+			mkdir $dirname
+		fi
+		cat /etc/resolv.conf > $dest
+		echo -e "\033[01;32m *\033[00m $dest created"
+		
 	fi
+	
 	if [[ $dirname == "none" ]] ; then
 		echo -e "\033[01;31m *\033[00m $dest not created"
 	fi
