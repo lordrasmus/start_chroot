@@ -14,7 +14,9 @@ if [ ! -e proc ] ; then
 fi
 
 function dir_mount {
-	grep "$(pwd)/$1" /proc/mounts > /dev/null
+	se="$(pwd)/$1 "
+	#echo $se
+	grep "$se" /proc/mounts > /dev/null
 	if [ ! 0 -eq $? ] ; then
 		echo -e "\033[01;32m *\033[00m mount /$1 ( $2 )"
 		mount -t $2 none $1
@@ -60,11 +62,11 @@ if [[ -L "$(pwd)/etc/resolv.conf" ]]; then
 		cat /etc/resolv.conf > $dest
 		echo -e "\033[01;32m *\033[00m $dest created"
 	else
-		dirname=$(dirname $dest)
+		dirname=$(pwd)$(dirname $dest)
 		if [ ! -e $dirname ] ; then
 			mkdir $dirname
 		fi
-		cat /etc/resolv.conf > $dest
+		cat /etc/resolv.conf > $(pwd)$dest
 		echo -e "\033[01;32m *\033[00m $dest created"
 		
 	fi
