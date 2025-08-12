@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [ ! -e ~/.cache/ ]; then
-	mkdir -p ~/.cache/
-fi	
+#if [ ! -e ~/.cache/ ]; then
+#	mkdir -p ~/.cache/
+#fi	
 
 
-if [ ! -e ~/.cache/start_chroot/ ]; then
-	( cd ~/.cache/; git clone https://github.com/lordrasmus/start_chroot )
+if [ ! -e /usr/local/start_chroot/ ]; then
+	( cd /usr/local/; git clone git@github.com:lordrasmus/start_chroot.git )
 else
-	( cd ~/.cache/start_chroot/; git pull )
+	( cd /usr/local/start_chroot/; git pull )
 fi
 
-bash ~/.cache/start_chroot/start_chroot_real.sh
+bash /usr/local/start_chroot/start_chroot_real.sh
 exit $?

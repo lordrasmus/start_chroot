@@ -19,7 +19,7 @@ function dir_mount {
 	grep "$se" /proc/mounts > /dev/null
 	if [ ! 0 -eq $? ] ; then
 		echo -e "\033[01;32m *\033[00m mount /$1 ( $2 )"
-		mount -t $2 none $1
+		mount -t "$2" none "$1"  || { echo "Fehler: konnte $1 nicht mounten"; exit 1; }
 	fi
 }
 
@@ -27,7 +27,7 @@ function dir_mount_opt {
 	grep "$(pwd)/$1" /proc/mounts > /dev/null
 	if [ ! 0 -eq $? ] ; then
 		echo -e "\033[01;32m *\033[00m mount /$1 ( $2 , $3)"
-		mount -o $3 -t $2 none $1
+		mount -o "$3" -t $2 none "$1"  || { echo "Fehler: konnte $1 nicht mounten"; exit 1; }
 	fi
 }
 
@@ -37,7 +37,7 @@ function dir_mount_opt {
 
 echo -e "\n\033[01;32m *\033[00m init chroot\n"
 
-mount --bind $(pwd) $(pwd)
+mount --bind "$(pwd)" "$(pwd)"
 
 dir_mount     'proc'    'proc'
 dir_mount     'sys'     'sysfs'
@@ -83,6 +83,11 @@ fi
 echo -e "\n\033[01;32m *\033[00m starting chroot\n"
 chroot .
 
-
+function  cleanup() {
+    umount "$PWD"/{proc,sys,dev/shm,dev/pts,run,var/tmp} 2>/dev/null
+    umount "$PWD"/dev
+    umount "$PWD"
+}
+trap cleanup EXIT
 
 
